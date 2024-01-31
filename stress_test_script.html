@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Navigate Stress Tester </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                clifford: '#da373d',
+              }
+            }
+          }
+        }
+      </script>
+    
+
+</head>
+
+<body class="bg-black  text-white ">
+
+    <div class="flex justify-center">
+
+        <h4>Welcome to Stress TEst </h4>
+
+        <br><br>
+
+         <button type="button" onclick="submitForm()" id="run-test" class="bg-blue-500 text-white p-2 rounded-md">
+            Run Test
+        </button>
+
+        
+    </div>
+
+    <div class="flex justify-center text-center text-red logs-container container">
+        <table class="table table-auto border-separate border-spacing-12 border border-slate-500">
+            <tr>
+                <td>User Id</td>
+                <td>Response Time</td>
+                <td>Response</td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+
+<footer>
+
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
+    <script src="coordinatesData.json"></script>
+
+    <script>
+ 
+
+        var stg_url = "https://api-stg.odekake-ev.com";
+        
+        var move_history_batch_url = '/api/move_history_batch_test/';
+ 
+        var user_number = 50;
+
+        
+        $(document).ready(function(){
+  
+            $("#run-test").on('click', function(){
+
+                var user_ids= [];
+
+                for(let i= 1; i <= user_number; i++){
+                    user_ids[i -1] = i;
+                }
+
+                user_ids.forEach(function(user_id){
+ 
+                        var url = stg_url + move_history_batch_url + user_id ;
+                        
+                        var ajaxTime;
+
+ 
+                        $.ajax({
+
+                            type: "POST",
+                            url: url,
+                            async: true,
+                            //dataType: 'json',
+                            contentType: 'application/json',
+                            data: JSON.stringify(coordinatesJson),
+                            beforeSend: function(){
+                                ajaxTime= new Date().getTime();
+                            },
+                            complete: function (response, status) {
+
+                                var totalTime = new Date().getTime() - ajaxTime;
+                               // $(".logs-container table").append("<tr><td>" + user_id + "<td>" + totalTime + "ms <td>" + status);
+
+                                //   $(".logs-container table").append("<tr><td>" + user_id + "<td>" + totalTime + "ms <td>" + status);
+
+                                
+                            },  
+                            success: function (response, status) {
+                                
+                                var totalTime = new Date().getTime() - ajaxTime;
+                                
+                                $(".logs-container table").append("<tr><td>" + user_id + "<td>" + totalTime + "ms <td>" + status);
+
+                            }
+
+                        });
+
+                });
+
+                console.log(coordinatesJson);
+
+                return;
+
+                
+            });
+
+
+        });
+
+        // function getRemote(user_id) {
+
+        //     var ajaxTime= new Date().getTime();
+
+        //     move_history_batch_url += '/'. requestJson.user_id ;
+
+        //     return $.ajax({
+        //         type: "POST",
+        //         url: stg_url + move_history_batch_url,
+        //         async: false,
+        //         dataType: 'json',
+        //         contentType: 'application/json',
+        //         data: coordinatesJson,
+        //         complete: function () {
+
+                    
+        //         },  
+        //         success: function (response) {
+
+        //             var totalTime = new Date().getTime()-ajaxTime;
+                    
+        //             $(".logs-container").append("<tr><td>" + user_id + "<td>" + totalTime + "<td>" + response);
+
+        //         }
+
+        //     }).responseText;
+            
+        // }
+
+    </script>
+
+</footer>
+
+</html>
+

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- <link rel="stylesheet" href="popup.css"> -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @import 'tailwindcss/base';
+    @import 'tailwindcss/components';
+    @import 'tailwindcss/utilities';
+
+    body {
+        background-color: #2d3748; Dark gray background color
+        /* color: #cbd5e0; Light gray text color */
+    }
+
+    </style>
+
+  <title>Tailwind Extension - Options</title>
+
+</head>
+<body class="text-gray-300 "> <!-- Set the default text color to lighter gray -->
+
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Options Page</h1>
+    <form id="optionsForm">
+      <div class="mb-4">
+        <label for="api" class="block text-sm font-medium text-white-600">API Endpoint:</label>
+        <input type="text" id="api" name="api" class="mt-1 p-2 border rounded-md w-full">
+      </div>
+      <div class="mb-4">
+        <label for="numUsers" class="block text-sm font-medium text-white-600">No. of Users:</label>
+        <input type="number" id="numUsers" name="numUsers" class="mt-1 p-2 border rounded-md w-full">
+      </div>
+      <div class="mb-4">
+        <label for="numIntervals" class="block text-sm font-medium text-white-600">Number of Intervals:</label>
+        <input type="number" id="numIntervals" name="numIntervals" class="mt-1 p-2 border rounded-md w-full">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-white-600">Payload:</label>
+        <input type="file" id="fileUpload" name="fileUpload" class="mt-1 p-2 border rounded-md mb-2">
+        <textarea id="payloadTextarea" name="payloadTextarea" class="p-2 border rounded-md w-full" placeholder="Or enter payload here..."></textarea>
+      </div>
+      <button type="button" onclick="submitForm()" class="bg-blue-500 text-white p-2 rounded-md">Run Test</button>
+    </form>
+
+    <h2 class="text-xl font-bold mt-8 mb-4">Submitted Data</h2>
+    <table class="min-w-full border rounded-md overflow-hidden">
+      <thead class="bg-gray-800 text-white">
+        <tr>
+          <th class="py-2 px-4">API</th>
+          <th class="py-2 px-4">No. of Users</th>
+          <th class="py-2 px-4">Number of Intervals</th>
+          <th class="py-2 px-4">Payload</th>
+        </tr>
+      </thead>
+      <tbody id="dataTableBody">
+        <!-- Data will be added dynamically here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function submitForm() {
+      // Retrieve form values
+      const api = document.getElementById('api').value;
+      const numUsers = document.getElementById('numUsers').value;
+      const numIntervals = document.getElementById('numIntervals').value;
+      const payload = document.getElementById('payloadTextarea').value;
+
+      // Add the data to the table
+      const tableBody = document.getElementById('dataTableBody');
+      const newRow = tableBody.insertRow();
+      newRow.innerHTML = `<td class="py-2 px-4">${api}</td>
+                          <td class="py-2 px-4">${numUsers}</td>
+                          <td class="py-2 px-4">${numIntervals}</td>
+                          <td class="py-2 px-4">${payload}</td>`;
+    }
+  </script>
+</body>
+</html>
