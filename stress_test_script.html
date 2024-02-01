@@ -38,10 +38,15 @@
         <h1 class="text-2xl font-bold mb-4">Stress Test</h1>
 
                  <form id="optionsForm" class="" width="100%" @submit.prevent="runTest">
-                    <div class="mb-4">
-                        <label for="api" class="block text-sm font-medium text-white-600">API Endpoint:</label>
-                        <input type="text" v-model="formData.api" id="api" name="api" class="mt-1 p-2 border rounded-md w-full text-gray-800">
-                    </div>
+        
+                    <div class="mb-4 flex items-center">
+                        <!-- Add-on field -->
+                        <div class="p-2 bg-gray-200 rounded-l-md text-gray-800">https://</div>
+                        <label for="api" class="block text-sm font-medium text-gray-600 sr-only">API:</label>
+                        <!-- Use v-model for two-way data binding -->
+                        <input v-model="formData.api" type="text" id="api" name="api" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                      </div>
+                
                     <div class="mb-4">
                         <label for="numUsers" class="block text-sm font-medium text-white-600">No. of Users:</label>
                         <input type="number" v-model="formData.numUsers" id="numUsers" name="numUsers" class="mt-1 p-2 border rounded-md w-full text-gray-800">
