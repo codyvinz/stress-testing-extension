@@ -18,9 +18,11 @@
             }
           }
         }
+
+
       </script>
 
-      <style>
+       <style>
 
         body {
             background-color: #2d3748; /* Dark gray background color */
@@ -35,32 +37,77 @@
 
     <div id="app" class="container mx-auto p-4 col-span-1"> <!-- Use col-span-1 to specify the width of the first column -->
 
-        <h1 class="text-2xl font-bold mb-4">Stress Test</h1>
+        <h1 class="text-2xl font-bold mb-4">Navigate API Stress Tester</h1>
 
                  <form id="optionsForm" class="" width="100%" @submit.prevent="runTest">
-        
+                    
+                    <label for="api" class="block text-sm font-medium text-white-600">Endpoint:</label>
+
                     <div class="mb-4 flex items-center">
+                      
                         <!-- Add-on field -->
-                        <div class="p-2 bg-gray-200 rounded-l-md text-gray-800">https://</div>
-                        <label for="api" class="block text-sm font-medium text-gray-600 sr-only">API:</label>
+                        <div class="p-2 bg-gray-200 rounded-l-md text-gray-800">
+                          <select v-model="formData.endpointProtocol">
+                            <option value="https://">https://</option>
+                            <option value="http://">http://</option>
+                            <option value="ssl://">ssl://</option>
+                          </select>
+                        </div>
                         <!-- Use v-model for two-way data binding -->
                         <input v-model="formData.api" type="text" id="api" name="api" class="mt-1 p-2 border rounded-md w-full text-gray-800">
-                      </div>
+                    </div>
                 
                     <div class="mb-4">
                         <label for="numUsers" class="block text-sm font-medium text-white-600">No. of Users:</label>
-                        <input type="number" v-model="formData.numUsers" id="numUsers" name="numUsers" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                        <input type="number" v-model="formData.numUsers" id="numUsers"  name="numUsers" class="mt-1 p-2 border rounded-md w-full text-gray-800">
                     </div>
-                    <div class="mb-4">
-                        <label for="numIntervals" class="block text-sm font-medium text-white-600">Number of Intervals:</label>
-                        <input type="number" v-model="formData.numIntervals" id="numIntervals" name="numIntervals" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                    <label for="numIntervals" class="block text-sm font-medium text-white-600">Intervals:</label>
+
+                    <div class="mb-4 flex items-center">
+                         <input type="number" v-model="formData.numIntervals"   id="numIntervals" name="numIntervals" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                      
+                        <div class="p-2">  
+                          <select v-model="formData.intervalType" id="intervalType" name="intervalType" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                            <option value="seconds">seconds</option>
+                            <option value="minutes">minutes</option>
+                            <option value="hours">hours</option>
+                          </select>
+                        </div>
+
+ 
+                      <!-- <div class="span">
+                        <select v-model="formData.intervalType" id="intervalType" name="intervalType" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                          <option value="seconds">seconds</option>
+                          <option value="minutes">minutes</option>
+                          <option value="hours">hours</option>
+                        </select>
+                      </div> -->
+                    
                     </div>
-                    <div class="mb-4">
-                    <label class="block text-sm font-medium text-white-600">Payload:</label>
+
+                    <label class="block text-sm font-medium text-white-600">Duration:</label>
+
+                    <div class="mb-4 flex items-center">
+                  
+                      <input type="number" v-model="formData.duration" name="duration" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                     
+                      <div class="p-2">  
+                        <select v-model="formData.durationType" id="durationType" name="durationType" class="mt-1 p-2 border rounded-md w-full text-gray-800">
+                          <option value="seconds">seconds</option>
+                          <option value="minutes">minutes</option>
+                          <option value="hours">hours</option>
+                        </select>
+                      </div>
+
+                    </div>
+
+                  <div class="mb-4">
+                  
+                  <label class="block text-sm font-medium text-white-600">Payload:</label>
                         <input type="file" v-model="formData.payload" @change="handleFileUpload"  id="fileUpload" name="fileUpload" class="mt-1 p-2 border rounded-md mb-2">
                         <textarea id="payloadTextarea" v-model="formData.payload"  name="payloadTextarea" class="p-2 border rounded-md w-full text-gray-800" placeholder="Or enter payload here..."></textarea>
                     </div>
-                    <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Run Test</button>
+                    <button type="submit" id='run-test' class="bg-blue-500 text-white p-2 rounded-md">Run Test</button>
                 </form>
             
             </div>
@@ -89,36 +136,115 @@
 
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    
+   
+    <script src="coordinatesData-100.json"></script>
 
     <script>
+  
+        var user_number;
+  
+
+    </script>
+    
+    <script src="apiCall_jquery.js" type="text/javascript"></script>
+
+
+    <!-- vue js -->
+
+   <script>
+
+      var stg_url = "api-stg.odekake-ev.com";
+        
+      var move_history_batch_url = '/api/move_history_batch_test/';
+      var sec = 1000;
+      var minutes = sec * 60;
+
+      
         new Vue({
+
           el: '#app',
           data: {
             formData: {
-              api: '',
-              numUsers: '',
-              numIntervals: '',
-              payload: ''
-            },
-            submittedData: []
-          },
-          methods: {
-            runTest() {
- 
- 
-            var user_ids= [];
 
-            for(let i= 1; i <= user_number; i++){
-                user_ids[i -1] = i;
-            }
+              // set default values
+              api: stg_url + move_history_batch_url,
+              numUsers: 50,
+              numIntervals: 30,
+              duration: 30,
+              durationType: 'minutes',
+              intervalType: 'seconds',
+              payload: '',
+              testIntervalID: null,
+              runTestDuration: 30 * minutes,
+              endpointProtocol: 'https://'
+            },
+
+            submittedData: []
             
-              // Clear the form fields after submission
-              this.formData.api = '';
-              this.formData.numUsers = '';
-              this.formData.numIntervals = '';
-              this.formData.payload = '';
-              this.formData.file = null;
+          },
+
+          methods: {
+
+            runTest(){
+
+               iteration = 0;
+              user_number = $("#numUsers").val();
+      
+              runTestInterval =  setInterval(() => {
+                this.callEndPoint();
+              }, sec * 30); // 30 seconds in milliseconds
+
+              setTimeout(() => {
+                this.stopTest();
+              }, this.runTestDuration);
+
+            },
+
+            stopTest() {
+                  
+              clearInterval(this.runTestInterval);
+              console.log('Test completed stopped.');
+            
+            },
+
+            async callEndPoint() {
+
+              var user_ids= [];
+                
+                let user_number = this.formData.numUsers;
+
+                let intervals   = this.formData.numIntervals;
+
+                let payload     = this.formData.payload;
+
+                letpayloadFile = this.formData.file;
+
+                for(let i= 1; i <= user_number; i++){
+                      user_ids[i -1] = i;
+                  }
+
+              try {
+
+                const response = await fetch( this.formData.api, {
+
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(coordinatesJson)
+
+                });
+
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
+              
+              
+                
+                
+              } catch (error) {
+                console.error('Error submitting form:', error);
+              }
 
             },
 
@@ -128,22 +254,11 @@
             }
 
           }
-        });
-      </script>
-    <script src="coordinatesData.json"></script>
 
-    <script>
- 
-        var stg_url = "https://api-stg.odekake-ev.com";
-        
-        var move_history_batch_url = '/api/move_history_batch_test/';
- 
-        var user_number = 50;
-  
+
+        }); 
 
     </script>
-    
-    <script src="apiCall_jquery.js" type="text/javascript"></script>
 
 </footer>
 
