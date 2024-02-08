@@ -4,16 +4,6 @@ $(document).ready(function(){
     var api, intervalType, payload, testIntervalID, runTestDuration, endpointProtocol, runTestInterval, interval; 
     var users = [];
 
-
-    const USER_ID = 0;
-    const FAIL_COUNT = 0;
-    const SUCCESS_COUNT = 0;
-
-    const TEST_DURATION     = minutes * 30;
-    const OFFSET_CNT        = 200;
-    const TEST_USERS_CNT    = 100;
-
-
     $("#api").val(stg_url + move_history_batch_url);
     
     endpointProtocol = $("#endpointProtocol").val();
@@ -36,19 +26,23 @@ $(document).ready(function(){
 
         clearInterval(runTestInterval);
         
+        stopTimer();
+
         console.log('Test has been now stopped.');
             
     });
 
     $("#run-test").on('click', function(){
 
+        startTimer();
+
         iteration = 0;
- 
+         
         // cast type int bug here
 
         user_cnt = $("#numUsers").val();
         
-        offset=  OFFSET_CNT;
+        offset=  OFFSET_USER_CNT;
 
         user_cnt = TEST_USERS_CNT;
    
@@ -67,6 +61,10 @@ $(document).ready(function(){
         runTestDuration = 30 * durationTypeVal;
 
         runTestDuration = TEST_DURATION;
+
+
+        //* display users ids in the table
+
 
         for(let i= 1; i <= user_cnt; i++){
 
@@ -90,6 +88,8 @@ $(document).ready(function(){
 
         console.log(users);
 
+        run_test();
+
         runTestInterval = setInterval(run_test, interval);
         
         // Set expiration for test
@@ -97,6 +97,8 @@ $(document).ready(function(){
         setTimeout(function(){
 
             clearInterval(runTestInterval);
+            stopTimer();
+
             console.log('Test has been completed, test run now stopped.');
 
         }, runTestDuration);
@@ -110,7 +112,7 @@ $(document).ready(function(){
 
         // alert(users);
              //* if by iteration
-            
+  
             if(iteration == 60){
 
                 //clearInterval(runTestInterval);
@@ -127,7 +129,6 @@ $(document).ready(function(){
              
 
             users.forEach((user) =>{
-
              
 
                     var url = endpointProtocol + stg_url + move_history_batch_url + user[USER_ID];
@@ -160,21 +161,26 @@ $(document).ready(function(){
                       
                             if(status == 'success'){
 
-                                this.user[SUCCESS_COUNT]++;
                             
                                 $("#user_success_cnt_"+this.user[USER_ID]).html(this.user[SUCCESS_COUNT]);
     
                             }else{
-                                this.user[FAIL_COUNT]++;
                                 $("#user_fail_cnt_"+this.user[USER_ID]).html(this.user[FAIL_COUNT]);
      
                             }
-                            console.log("Success:" + this.user[SUCCESS_COUNT]);
-                            console.log("Fail:" + this.user[FAIL_COUNT]);
+
+                            
+                            $("#user_success_cnt_"+this.user[USER_ID]).html(this.user[SUCCESS_COUNT]);
+                            $("#user_fail_cnt_"+this.user[USER_ID]).html(this.user[FAIL_COUNT]);
+
+                            // console.log("Success:" + this.user[SUCCESS_COUNT]);
+                            // console.log("Fail:" + this.user[FAIL_COUNT]);
         
                         },  
                         success: function (response, status) {
-                            
+
+                            this.user[SUCCESS_COUNT]++;
+
                             // var totalTime = new Date().getTime() - ajaxTime;
                             
                             // $(".logs-container table").append("<tr><td>" + user_id + "<td>" + totalTime + "ms <td>" + status);
@@ -182,6 +188,7 @@ $(document).ready(function(){
 
                         },
                         error: function(xhr, status, error){
+                            this.user[FAIL_COUNT]++;
 
                         }
 
@@ -191,7 +198,7 @@ $(document).ready(function(){
 
             
 
-            iteration++;
+            //iteration++;
             
             
             return;
